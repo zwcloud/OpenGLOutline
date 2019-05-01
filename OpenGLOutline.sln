@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 15
+VisualStudioVersion = 15.0.28307.421
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Outline01-ScaleModel", "Outline01-ScaleModel\Outline01-ScaleModel.vcxproj", "{2B817036-2A90-440A-9E26-6E6E9200518A}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|x86 = Debug|x86
+		Release|x86 = Release|x86
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{2B817036-2A90-440A-9E26-6E6E9200518A}.Debug|x86.ActiveCfg = Debug|Win32
+		{2B817036-2A90-440A-9E26-6E6E9200518A}.Debug|x86.Build.0 = Debug|Win32
+		{2B817036-2A90-440A-9E26-6E6E9200518A}.Release|x86.ActiveCfg = Release|Win32
+		{2B817036-2A90-440A-9E26-6E6E9200518A}.Release|x86.Build.0 = Release|Win32
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {26A9E6AA-6979-415B-B99E-FFDD36064359}
+	EndGlobalSection
+EndGlobal
