@@ -9,6 +9,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Outline02-ScaleModelStencil
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Outline03-ScaleNormal", "Outline03-ScaleNormal\Outline03-ScaleNormal.vcxproj", "{F2C4CA81-48B2-4BED-88AD-976BA64C818D}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Outline04-BlurStencil", "Outline04-BlurStencil\Outline04-BlurStencil.vcxproj", "{EAD89FCB-1CAB-4850-9E46-50325112761D}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x86 = Debug|x86
@@ -27,6 +29,10 @@ Global
 		{F2C4CA81-48B2-4BED-88AD-976BA64C818D}.Debug|x86.Build.0 = Debug|Win32
 		{F2C4CA81-48B2-4BED-88AD-976BA64C818D}.Release|x86.ActiveCfg = Release|Win32
 		{F2C4CA81-48B2-4BED-88AD-976BA64C818D}.Release|x86.Build.0 = Release|Win32
+		{EAD89FCB-1CAB-4850-9E46-50325112761D}.Debug|x86.ActiveCfg = Debug|Win32
+		{EAD89FCB-1CAB-4850-9E46-50325112761D}.Debug|x86.Build.0 = Debug|Win32
+		{EAD89FCB-1CAB-4850-9E46-50325112761D}.Release|x86.ActiveCfg = Release|Win32
+		{EAD89FCB-1CAB-4850-9E46-50325112761D}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
