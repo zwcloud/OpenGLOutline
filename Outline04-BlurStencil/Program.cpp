@@ -887,6 +887,7 @@ void Render(HWND hWnd)
     glDrawArrays(GL_TRIANGLES, 0, 6);
     glStencilMask(0xFF);
     glUseProgram(0);
+    glBindVertexArray(0);
     glBindBuffer(GL_ARRAY_BUFFER, 0);
 #endif
 
