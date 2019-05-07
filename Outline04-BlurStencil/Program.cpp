@@ -825,8 +825,10 @@ void Render(HWND hWnd)
     //bind to default framebuffer
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
-    //render the box to set the stencil value to 0xFF
+    //render the box with textured shader and set the stencil value to 0xFF
+#if OULINE_ONLY
     glColorMask(GL_FALSE,GL_FALSE,GL_FALSE,GL_FALSE);
+#endif
     glEnable(GL_DEPTH_TEST);
     glDepthMask(GL_TRUE);
     glEnable(GL_STENCIL_TEST);
