@@ -15,6 +15,6 @@ Open OpenGLOutline.sln in VS2017, press F5 to build & run one of the projects as
   ![](doc/2.png)
 * **Outline03-ScaleNormal**: Scale up the model by offet every vertex along its normal direction and draw with flat color, then draw the original model.  
   ![](doc/3.png)
-* **Outline04-BlurStencil**: Draw textured box to default framebuffer, set valid fragments' stencil to 0xFF; draw flat-colored box to the framebuffer; draw the blurred framebuffer quad to default framebuffer.  
+* **Outline04-BlurStencil**: Draw textured box to default framebuffer, set valid fragments' stencil to 1; draw flat-colored box to the framebuffer; draw the blurred framebuffer quad to default framebuffer but ignore those fragments whose stecil value is 1 via stencil test.  
   ![](doc/4.png)  
   Note, a 1-pixel narrow red outline is around the box, because we uses a 3x3 kerning for blurring. This will be improved.
