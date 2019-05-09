@@ -46,6 +46,8 @@ GLint uniformHorizontal = -1;
 GLuint pingpongFBO[2] = { 0, 0 };
 GLuint pingpongColorbuffers[2] = { 0, 0 };
 
+GLuint bloomProgram = 0;
+
 GLenum err = GL_NO_ERROR;
 
 //image
@@ -503,6 +505,51 @@ void main()
 
     _CheckGLError_;
 
+        //blur program for framebuffer quad
+    {
+        //Vertex shader
+        const char* vShaderStr = R"(
+#version 330 core
+layout (location = 0) in vec3 aPos;
+layout (location = 1) in vec2 aTexCoords;
+
+out vec2 TexCoords;
+
+void main()
+{
+    TexCoords = aTexCoords;
+    gl_Position = vec4(aPos, 1.0);
+}
+)";
+        const char* pShaderStr = R"(
+#version 330 core
+out vec4 FragColor;
+
+in vec2 TexCoords;
+
+uniform sampler2D scene;
+uniform sampler2D bloomBlur;
+uniform bool bloom;
+uniform float exposure;
+
+void main()
+{
+    const float gamma = 2.2;
+    vec3 hdrColor = texture(scene, TexCoords).rgb;
+    vec3 bloomColor = texture(bloomBlur, TexCoords).rgb;
+    if(bloom)
+        hdrColor += bloomColor; // additive blending
+    // tone mapping
+    vec3 result = vec3(1.0) - exp(-hdrColor * exposure);
+    // also gamma correct while we're at it
+    result = pow(result, vec3(1.0 / gamma));
+    FragColor = vec4(result, 1.0);
+}
+)";
+        bloomProgram = CreateShaderProgram(vShaderStr, pShaderStr);
+    }
+    _CheckGLError_;
+
     //vertex buffer
     glGenBuffers(1, &vertexBuf);
     assert(vertexBuf != 0);
@@ -549,7 +596,7 @@ void main()
     glBindTexture(GL_TEXTURE_2D, 0);
 
     //other settings
-    glClearColor(1.0f, 1.0f, 1.0f, 0.0f);
+    glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
     glDisable(GL_CULL_FACE);
     glEnable(GL_CULL_FACE);
     glFrontFace(GL_CCW);
@@ -654,6 +701,14 @@ void main()
         }
     }
 
+    _CheckGLError_;
+
+    glUseProgram(bloomProgram);
+    glUniform1i(glGetUniformLocation(bloomProgram, "scene"), 0);//set to active texture 0
+    glUniform1i(glGetUniformLocation(bloomProgram, "bloomBlur"), 1);//set to active texture 1
+    glUniform1i(glGetUniformLocation(bloomProgram, "bloom"), 1);//set to 1 to enable bloom
+    glUniform1f(glGetUniformLocation(bloomProgram, "exposure"), 10);//bloom exposure
+    _CheckGLError_;
 
     return TRUE;
 }
@@ -731,6 +786,7 @@ void Render(HWND hWnd)
     glBindBuffer(GL_ARRAY_BUFFER, 0);
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 #endif
+    _CheckGLError_;
 
 #if true//draw flat-colored box to the framebuffer
     //bind to framebuffer
@@ -752,6 +808,8 @@ void Render(HWND hWnd)
     glBindBuffer(GL_ARRAY_BUFFER, 0);
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 #endif
+
+    _CheckGLError_;
 
 #if true//ping-pong-framebuffer for blurring
     //bind to framebuffer
@@ -796,10 +854,12 @@ void Render(HWND hWnd)
 
 #if true//render blurred result to default buffer
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
-    glUseProgram(blurProgram);
-    glBindVertexArray(quadVAO);
-    glBindBuffer(GL_ARRAY_BUFFER, quadVBO);
+    glUseProgram(bloomProgram);
     glActiveTexture(GL_TEXTURE0);
+    glBindTexture(GL_TEXTURE_2D, colorBuffers[0]);
+    glActiveTexture(GL_TEXTURE1);
+    glBindTexture(GL_TEXTURE_2D, pingpongColorbuffers[!horizontal]);
+    glBindVertexArray(quadVAO);
     glDrawArrays(GL_TRIANGLES, 0, 6);
     glStencilMask(0xFF);
     glUseProgram(0);
