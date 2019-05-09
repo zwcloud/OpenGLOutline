@@ -35,13 +35,16 @@ GLuint flatColorProgram = 0;
 
 GLuint blurProgram = 0;
 GLuint framebuffer = 0;
-GLuint textureColorBuffers[] = { 0, 0 };
+GLuint colorBuffers[] = { 0, 0 };
 GLuint attachments[2] = { GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1 };
 GLuint renderBuffer = 0;
 GLuint quadVAO, quadVBO;
 GLint attributePosQuad = 0;
 GLint attributeTexCoordQuad = 0;
 GLint uniformHorizontal = -1;
+
+GLuint pingpongFBO[2] = { 0, 0 };
+GLuint pingpongColorbuffers[2] = { 0, 0 };
 
 GLenum err = GL_NO_ERROR;
 
@@ -438,7 +441,7 @@ void main()
 out vec4 Out_Color;
 void main()
 {
-	Out_Color = vec4(1.0f, 0.0f, 0.0f, 1.0f);
+	Out_Color = vec4(30.0f, 0.0f, 0.0f, 1.0f);
 }
 )";
         flatColorProgram = CreateShaderProgram(vShaderStr, pShaderStr);
@@ -497,6 +500,7 @@ void main()
         blurProgram = CreateShaderProgram(vShaderStr, pShaderStr);
         uniformHorizontal = glGetUniformLocation(blurProgram, "horizontal");
     }
+
     _CheckGLError_;
 
     //vertex buffer
@@ -505,15 +509,13 @@ void main()
     glBindBuffer(GL_ARRAY_BUFFER, vertexBuf);
     glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), (GLvoid*)vertices, GL_STATIC_DRAW);
 
-    _CheckGLError_;
+    //index buffer
     glGenBuffers(1, &indexBuf);
     assert(indexBuf != 0);
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indexBuf);
     glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), (GLvoid*)indices, GL_STATIC_DRAW);
 
-    _CheckGLError_;
     glUseProgram(normalProgram);
-    _CheckGLError_;
     //attribute locations
     attributePos = 0;
     attributeTexCoord = 1;
@@ -561,24 +563,28 @@ void main()
     glBindFramebuffer(GL_FRAMEBUFFER, framebuffer);
 
     //generate textures as the color attchment of the framebuffer
-    glGenTextures(2, textureColorBuffers);
+    glGenTextures(2, colorBuffers);
     //generate texture for color0
-    glBindTexture(GL_TEXTURE_2D, textureColorBuffers[0]);
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, clientWidth, clientHeight, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
+    glBindTexture(GL_TEXTURE_2D, colorBuffers[0]);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB16F, clientWidth, clientHeight, 0, GL_RGB, GL_FLOAT, NULL);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
     glBindTexture(GL_TEXTURE_2D, 0);
 
     //generate texture for color1
-    glBindTexture(GL_TEXTURE_2D, textureColorBuffers[1]);
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, clientWidth, clientHeight, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
+    glBindTexture(GL_TEXTURE_2D, colorBuffers[1]);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB16F, clientWidth, clientHeight, 0, GL_RGB, GL_FLOAT, NULL);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
     glBindTexture(GL_TEXTURE_2D, 0);
 
     //attach it to currently bound framebuffer object
-    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, textureColorBuffers[0], 0);
-    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT1, GL_TEXTURE_2D, textureColorBuffers[1], 0);
+    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, colorBuffers[0], 0);
+    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT1, GL_TEXTURE_2D, colorBuffers[1], 0);
 
     //specifies a list of color buffers (both color buffers) to be drawn into
     glDrawBuffers(2, attachments);
@@ -625,6 +631,29 @@ void main()
     glBindBuffer(GL_ARRAY_BUFFER, 0);
 
     _CheckGLError_;
+
+    // ping-pong-framebuffer for blurring
+    glGenFramebuffers(2, pingpongFBO);
+    glGenTextures(2, pingpongColorbuffers);
+    for (unsigned int i = 0; i < 2; i++)
+    {
+        glBindFramebuffer(GL_FRAMEBUFFER, pingpongFBO[i]);
+        glBindTexture(GL_TEXTURE_2D, pingpongColorbuffers[i]);
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB16F, clientWidth, clientHeight, 0, GL_RGB, GL_FLOAT, NULL);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE); // we clamp to the edge as the blur filter would otherwise sample repeated texture values!
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+        glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, pingpongColorbuffers[i], 0);
+        // also check if framebuffers are complete (no need for depth buffer)
+        if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
+        {
+            char buf[128];
+            sprintf(buf, "error: Framebuffer is not complete.\n");
+            OutputDebugStringA(buf);
+        }
+    }
+
 
     return TRUE;
 }
@@ -682,7 +711,7 @@ void Render(HWND hWnd)
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
     //render the box with textured shader and set the stencil value to 0xFF
-#if true//OULINE_ONLY
+#if false//OULINE_ONLY
     glColorMask(GL_FALSE, GL_FALSE, GL_FALSE, GL_FALSE);
 #endif
     glEnable(GL_DEPTH_TEST);
@@ -724,7 +753,7 @@ void Render(HWND hWnd)
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 #endif
 
-#if true//draw the blurred framebuffer quad to default framebuffer
+#if true//ping-pong-framebuffer for blurring
     //bind to framebuffer
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
@@ -741,18 +770,37 @@ void Render(HWND hWnd)
     glBindVertexArray(quadVAO);
     glBindBuffer(GL_ARRAY_BUFFER, quadVBO);
     glActiveTexture(GL_TEXTURE0);
-    for (int i = 0; i < 10; i++)
+
+    // blur bright fragments with two-pass Gaussian Blur
+    bool horizontal = true, first_iteration = true;
+    unsigned int amount = 10;
+    for (unsigned int i = 0; i < amount; i++)
     {
-        GLint uniformHorizontal = glGetUniformLocation(blurProgram, "horizontal");
-
-        glUniform1i(uniformHorizontal, 1);
-        glBindTexture(GL_TEXTURE_2D, textureColorBuffers[1]);
+        glBindFramebuffer(GL_FRAMEBUFFER, pingpongFBO[horizontal]);
+        glUniform1i(uniformHorizontal, horizontal? 1:0);
+        glBindTexture(GL_TEXTURE_2D, first_iteration ? colorBuffers[1] : pingpongColorbuffers[!horizontal]);  // bind texture of other framebuffer (or scene if first iteration)
         glDrawArrays(GL_TRIANGLES, 0, 6);
 
-        glUniform1i(uniformHorizontal, 0);
-        glBindTexture(GL_TEXTURE_2D, textureColorBuffers[0]);
-        glDrawArrays(GL_TRIANGLES, 0, 6);
+        horizontal = !horizontal;
+        if (first_iteration)
+            first_iteration = false;
     }
+    glBindFramebuffer(GL_FRAMEBUFFER, 0);
+    glStencilMask(0xFF);
+    glUseProgram(0);
+    glBindVertexArray(0);
+    glBindBuffer(GL_ARRAY_BUFFER, 0);
+#endif
+
+    _CheckGLError_;
+
+#if true//render blurred result to default buffer
+    glBindFramebuffer(GL_FRAMEBUFFER, 0);
+    glUseProgram(blurProgram);
+    glBindVertexArray(quadVAO);
+    glBindBuffer(GL_ARRAY_BUFFER, quadVBO);
+    glActiveTexture(GL_TEXTURE0);
+    glDrawArrays(GL_TRIANGLES, 0, 6);
     glStencilMask(0xFF);
     glUseProgram(0);
     glBindVertexArray(0);
