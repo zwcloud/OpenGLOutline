@@ -57,6 +57,13 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalLibraryDirectories>$(SolutionDir)GLEW\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
+    <CustomBuildStep>
+      <Message>Deploying glew32.dll</Message>
+      <Outputs>dummy</Outputs>
+      <Command>if not exist "$(OutputPath)glew32.dll" (
+    copy /Y $(ProjectDir)..\GLEW\glew32.dll $(OutputPath)
+)</Command>
+    </CustomBuildStep>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
@@ -74,6 +81,13 @@
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
     </Link>
+    <CustomBuildStep>
+      <Message>Deploying glew32.dll</Message>
+      <Outputs>dummy</Outputs>
+      <Command>if not exist "$(OutputPath)glew32.dll" (
+    copy /Y $(ProjectDir)..\GLEW\glew32.dll $(OutputPath)
+)</Command>
+    </CustomBuildStep>
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="..\LodePNG\lodepng.cpp" />
