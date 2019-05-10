@@ -299,6 +299,94 @@ unsigned int indices[]{
       22, 23, 20,
 };
 
+GLuint CreateShaderProgram(const char* vShaderStr, const char* pShaderStr)
+{
+    GLint compiled;
+    //Vertex shader
+    vShader = glCreateShader(GL_VERTEX_SHADER);
+    if (vShader == 0)
+    {
+        OutputDebugString(L"glCreateShader Failed!\n");
+        return -1;
+    }
+    glShaderSource(vShader, 1, &vShaderStr, nullptr);
+    glCompileShader(vShader);
+    glGetShaderiv(vShader, GL_COMPILE_STATUS, &compiled);
+    if (!compiled)
+    {
+        GLint infoLength = 0;
+        glGetShaderiv(vShader, GL_INFO_LOG_LENGTH, &infoLength);
+        if (infoLength > 1)
+        {
+            char* infoLog = (char*)malloc(sizeof(char)*infoLength);
+            glGetShaderInfoLog(vShader, infoLength, nullptr, infoLog);
+            OutputDebugString(L"Error compiling vertex shader: \n");
+            OutputDebugStringA(infoLog);
+            OutputDebugStringA("\n");
+            free(infoLog);
+        }
+        glDeleteShader(vShader);
+        return -1;
+    }
+
+    //Fragment shader
+    pShader = glCreateShader(GL_FRAGMENT_SHADER);
+    if (vShader == 0)
+    {
+        OutputDebugString(L"glCreateShader Failed!\n");
+        return -1;
+    }
+    glShaderSource(pShader, 1, &pShaderStr, nullptr);
+    glCompileShader(pShader);
+    glGetShaderiv(pShader, GL_COMPILE_STATUS, &compiled);
+    if (!compiled)
+    {
+        GLint infoLength = 0;
+        glGetShaderiv(pShader, GL_INFO_LOG_LENGTH, &infoLength);
+        if (infoLength > 1)
+        {
+            char* infoLog = (char*)malloc(sizeof(char)*infoLength);
+            glGetShaderInfoLog(pShader, infoLength, NULL, infoLog);
+            OutputDebugString(L"Error compiling fragment shader: \n");
+            OutputDebugStringA(infoLog);
+            OutputDebugStringA("\n");
+            free(infoLog);
+        }
+        glDeleteShader(pShader);
+        return -1;
+    }
+
+    //Program
+    GLint linked;
+    GLuint program = glCreateProgram();
+    if (program == 0)
+    {
+        OutputDebugString(L"glCreateProgram Failed!\n");
+        return -1;
+    }
+    glAttachShader(program, vShader);
+    glAttachShader(program, pShader);
+    glLinkProgram(program);
+    glGetProgramiv(program, GL_LINK_STATUS, &linked);
+    if (!linked)
+    {
+        GLint infoLength = 0;
+        glGetProgramiv(program, GL_INFO_LOG_LENGTH, &infoLength);
+        if (infoLength > 1)
+        {
+            char* infoLog = (char*)malloc(sizeof(char) * infoLength);
+            glGetProgramInfoLog(program, infoLength, nullptr, infoLog);
+            OutputDebugString(L"Error Linking program: \n");
+            OutputDebugStringA(infoLog);
+            OutputDebugStringA("\n");
+            free(infoLog);
+        }
+        glDeleteProgram(program);
+        return -1;
+    }
+    return program;
+}
+
 BOOL InitOpenGL(HWND hWnd)
 {
     GLint compiled;
@@ -317,33 +405,6 @@ void main()
 	gl_Position = ProjMtx * in_Position;
 }
 )";
-        vShader = glCreateShader(GL_VERTEX_SHADER);
-        if (vShader == 0)
-        {
-            OutputDebugString(L"glCreateShader Failed!\n");
-            return -1;
-        }
-        glShaderSource(vShader, 1, &vShaderStr, nullptr);
-        glCompileShader(vShader);
-        glGetShaderiv(vShader, GL_COMPILE_STATUS, &compiled);
-        if (!compiled)
-        {
-            GLint infoLength = 0;
-            glGetShaderiv(vShader, GL_INFO_LOG_LENGTH, &infoLength);
-            if (infoLength > 1)
-            {
-                char* infoLog = (char*)malloc(sizeof(char)*infoLength);
-                glGetShaderInfoLog(vShader, infoLength, nullptr, infoLog);
-                OutputDebugString(L"Error compiling vertex shader: \n");
-                OutputDebugStringA(infoLog);
-                OutputDebugStringA("\n");
-                free(infoLog);
-            }
-            glDeleteShader(vShader);
-            return -1;
-        }
-
-        //Fragment shader
         const char* pShaderStr = R"(
 #version 330
 uniform sampler2D Texture;
@@ -355,67 +416,9 @@ void main()
 	Out_Color = texture(Texture, st);
 }
 )";
-        pShader = glCreateShader(GL_FRAGMENT_SHADER);
-        if (vShader == 0)
-        {
-            OutputDebugString(L"glCreateShader Failed!\n");
-            return FALSE;
-        }
-        glShaderSource(pShader, 1, &pShaderStr, nullptr);
-        glCompileShader(pShader);
-        glGetShaderiv(pShader, GL_COMPILE_STATUS, &compiled);
-        if (!compiled)
-        {
-            GLint infoLength = 0;
-            glGetShaderiv(pShader, GL_INFO_LOG_LENGTH, &infoLength);
-            if (infoLength > 1)
-            {
-                char* infoLog = (char*)malloc(sizeof(char)*infoLength);
-                glGetShaderInfoLog(pShader, infoLength, NULL, infoLog);
-                OutputDebugString(L"Error compiling fragment shader: \n");
-                OutputDebugStringA(infoLog);
-                OutputDebugStringA("\n");
-                free(infoLog);
-            }
-            glDeleteShader(pShader);
-            return FALSE;
-        }
-
-        //Program
-        GLint linked;
-        GLuint program = glCreateProgram();
-        if (program == 0)
-        {
-            OutputDebugString(L"glCreateProgram Failed!\n");
-            return -1;
-        }
-        glAttachShader(program, vShader);
-        glAttachShader(program, pShader);
-        glLinkProgram(program);
-        glGetProgramiv(program, GL_LINK_STATUS, &linked);
-        if (!linked)
-        {
-            GLint infoLength = 0;
-            glGetProgramiv(program, GL_INFO_LOG_LENGTH, &infoLength);
-            if (infoLength > 1)
-            {
-                char* infoLog = (char*)malloc(sizeof(char) * infoLength);
-                glGetProgramInfoLog(program, infoLength, nullptr, infoLog);
-                OutputDebugString(L"Error Linking program: \n");
-                OutputDebugStringA(infoLog);
-                OutputDebugStringA("\n");
-                free(infoLog);
-            }
-            glDeleteProgram(program);
-            return FALSE;
-        }
-        normalProgram = program;
-
-        //uniform location
-        glUseProgram(normalProgram);
-        uniformProjMtx = glGetUniformLocation(normalProgram, "ProjMtx");
+        normalProgram = CreateShaderProgram(vShaderStr, pShaderStr);
     }
-
+    uniformProjMtx = glGetUniformLocation(normalProgram, "ProjMtx");
 
     //flat color model program
     {
@@ -430,33 +433,6 @@ void main()
 	gl_Position = ProjMtx * in_Position;
 }
 )";
-        vShader = glCreateShader(GL_VERTEX_SHADER);
-        if (vShader == 0)
-        {
-            OutputDebugString(L"glCreateShader Failed!\n");
-            return -1;
-        }
-        glShaderSource(vShader, 1, &vShaderStr, nullptr);
-        glCompileShader(vShader);
-        glGetShaderiv(vShader, GL_COMPILE_STATUS, &compiled);
-        if (!compiled)
-        {
-            GLint infoLength = 0;
-            glGetShaderiv(vShader, GL_INFO_LOG_LENGTH, &infoLength);
-            if (infoLength > 1)
-            {
-                char* infoLog = (char*)malloc(sizeof(char)*infoLength);
-                glGetShaderInfoLog(vShader, infoLength, nullptr, infoLog);
-                OutputDebugString(L"Error compiling vertex shader: \n");
-                OutputDebugStringA(infoLog);
-                OutputDebugStringA("\n");
-                free(infoLog);
-            }
-            glDeleteShader(vShader);
-            return -1;
-        }
-
-        //Fragment shader
         const char* pShaderStr = R"(
 #version 330
 out vec4 Out_Color;
@@ -465,61 +441,7 @@ void main()
 	Out_Color = vec4(1.0f, 0.0f, 0.0f, 1.0f);
 }
 )";
-        pShader = glCreateShader(GL_FRAGMENT_SHADER);
-        if (vShader == 0)
-        {
-            OutputDebugString(L"glCreateShader Failed!\n");
-            return FALSE;
-        }
-        glShaderSource(pShader, 1, &pShaderStr, nullptr);
-        glCompileShader(pShader);
-        glGetShaderiv(pShader, GL_COMPILE_STATUS, &compiled);
-        if (!compiled)
-        {
-            GLint infoLength = 0;
-            glGetShaderiv(pShader, GL_INFO_LOG_LENGTH, &infoLength);
-            if (infoLength > 1)
-            {
-                char* infoLog = (char*)malloc(sizeof(char)*infoLength);
-                glGetShaderInfoLog(pShader, infoLength, NULL, infoLog);
-                OutputDebugString(L"Error compiling fragment shader: \n");
-                OutputDebugStringA(infoLog);
-                OutputDebugStringA("\n");
-                free(infoLog);
-            }
-            glDeleteShader(pShader);
-            return FALSE;
-        }
-
-        //Program
-        GLint linked;
-        GLuint program = glCreateProgram();
-        if (program == 0)
-        {
-            OutputDebugString(L"glCreateProgram Failed!\n");
-            return -1;
-        }
-        glAttachShader(program, vShader);
-        glAttachShader(program, pShader);
-        glLinkProgram(program);
-        glGetProgramiv(program, GL_LINK_STATUS, &linked);
-        if (!linked)
-        {
-            GLint infoLength = 0;
-            glGetProgramiv(program, GL_INFO_LOG_LENGTH, &infoLength);
-            if (infoLength > 1)
-            {
-                char* infoLog = (char*)malloc(sizeof(char) * infoLength);
-                glGetProgramInfoLog(program, infoLength, nullptr, infoLog);
-                OutputDebugString(L"Error Linking program: \n");
-                OutputDebugStringA(infoLog);
-                OutputDebugStringA("\n");
-                free(infoLog);
-            }
-            glDeleteProgram(program);
-            return FALSE;
-        }
-        flatColorProgram = program;
+        flatColorProgram = CreateShaderProgram(vShaderStr, pShaderStr);
     }
 
     //blur program for framebuffer quad
@@ -536,33 +458,6 @@ void main()
     TexCoords = aTexCoords;
 }
 )";
-        vShader = glCreateShader(GL_VERTEX_SHADER);
-        if (vShader == 0)
-        {
-            OutputDebugString(L"glCreateShader Failed!\n");
-            return -1;
-        }
-        glShaderSource(vShader, 1, &vShaderStr, nullptr);
-        glCompileShader(vShader);
-        glGetShaderiv(vShader, GL_COMPILE_STATUS, &compiled);
-        if (!compiled)
-        {
-            GLint infoLength = 0;
-            glGetShaderiv(vShader, GL_INFO_LOG_LENGTH, &infoLength);
-            if (infoLength > 1)
-            {
-                char* infoLog = (char*)malloc(sizeof(char)*infoLength);
-                glGetShaderInfoLog(vShader, infoLength, nullptr, infoLog);
-                OutputDebugString(L"Error compiling vertex shader: \n");
-                OutputDebugStringA(infoLog);
-                OutputDebugStringA("\n");
-                free(infoLog);
-            }
-            glDeleteShader(vShader);
-            return -1;
-        }
-
-        //Fragment shader
         const char* pShaderStr = R"(
 #version 330
 out vec4 FragColor;
@@ -601,61 +496,7 @@ void main()
     FragColor = col;
 }
 )";
-        pShader = glCreateShader(GL_FRAGMENT_SHADER);
-        if (vShader == 0)
-        {
-            OutputDebugString(L"glCreateShader Failed!\n");
-            return FALSE;
-        }
-        glShaderSource(pShader, 1, &pShaderStr, nullptr);
-        glCompileShader(pShader);
-        glGetShaderiv(pShader, GL_COMPILE_STATUS, &compiled);
-        if (!compiled)
-        {
-            GLint infoLength = 0;
-            glGetShaderiv(pShader, GL_INFO_LOG_LENGTH, &infoLength);
-            if (infoLength > 1)
-            {
-                char* infoLog = (char*)malloc(sizeof(char)*infoLength);
-                glGetShaderInfoLog(pShader, infoLength, NULL, infoLog);
-                OutputDebugString(L"Error compiling fragment shader: \n");
-                OutputDebugStringA(infoLog);
-                OutputDebugStringA("\n");
-                free(infoLog);
-            }
-            glDeleteShader(pShader);
-            return FALSE;
-        }
-
-        //Program
-        GLint linked;
-        GLuint program = glCreateProgram();
-        if (program == 0)
-        {
-            OutputDebugString(L"glCreateProgram Failed!\n");
-            return -1;
-        }
-        glAttachShader(program, vShader);
-        glAttachShader(program, pShader);
-        glLinkProgram(program);
-        glGetProgramiv(program, GL_LINK_STATUS, &linked);
-        if (!linked)
-        {
-            GLint infoLength = 0;
-            glGetProgramiv(program, GL_INFO_LOG_LENGTH, &infoLength);
-            if (infoLength > 1)
-            {
-                char* infoLog = (char*)malloc(sizeof(char) * infoLength);
-                glGetProgramInfoLog(program, infoLength, nullptr, infoLog);
-                OutputDebugString(L"Error Linking program: \n");
-                OutputDebugStringA(infoLog);
-                OutputDebugStringA("\n");
-                free(infoLog);
-            }
-            glDeleteProgram(program);
-            return FALSE;
-        }
-        blurProgram = program;
+        blurProgram = CreateShaderProgram(vShaderStr, pShaderStr);
     }
 
     //vertex buffer

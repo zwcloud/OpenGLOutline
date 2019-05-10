@@ -239,7 +239,7 @@ void fnCheckGLError(const char* szFile, int nLine)
 }
 
 // position             texcoord       normal
-    float vertices[] = {
+float vertices[] = {
 0.288, -0.288, 0.288,  0.374, 0.318,  0.577, -0.577, 0.577,
 0.309, -0.309, 0.240,  0.394, 0.305,  0.620, -0.620, 0.481,
 0.249, -0.354, 0.249,  0.374, 0.283,  0.496, -0.712, 0.496,
@@ -761,11 +761,98 @@ unsigned int indices[]{
 2,1,0,3,2,0,4,2,3,5,4,3,6,4,5,7,6,5,8,6,7,9,8,7,2,10,1,10,11,1,12,10,2,4,12,2,13,12,4,6,13,4,14,13,6,8,14,6,10,15,11,15,16,11,17,15,10,12,17,10,18,17,12,13,18,12,19,18,13,14,19,13,15,20,16,20,21,16,22,20,15,17,22,15,23,22,17,18,24,17,25,23,18,19,26,18,27,19,14,28,27,14,29,27,28,30,29,28,31,29,30,32,31,30,33,31,32,34,33,32,34,32,35,36,34,35,36,35,37,38,36,37,33,39,31,39,40,31,31,40,29,37,35,41,35,42,41,32,30,42,35,32,42,40,43,29,41,42,44,42,45,44,42,30,45,30,28,45,44,45,9,45,8,9,45,28,8,28,14,8,43,46,27,29,43,27,27,46,19,46,47,19,50,49,48,51,50,48,52,50,51,53,52,51,54,52,53,55,54,53,56,54,55,57,56,55,50,58,49,58,59,49,60,58,50,52,60,50,61,60,52,54,61,52,62,61,54,56,62,54,58,63,59,63,64,59,65,63,58,60,65,58,66,65,60,61,66,60,67,66,61,62,67,61,63,68,64,68,69,64,70,68,63,65,70,63,71,70,65,66,71,65,72,71,66,67,73,66,74,67,62,75,74,62,76,74,75,77,76,75,78,76,77,79,78,77,80,78,79,81,80,79,81,79,82,83,81,82,83,82,84,85,83,84,80,21,78,21,20,78,78,20,76,84,82,86,82,87,86,79,77,87,82,79,87,20,22,76,86,87,88,87,89,88,87,77,89,77,75,89,88,89,57,89,56,57,89,75,56,75,62,56,22,23,74,76,22,74,23,90,67,74,91,67,94,93,92,95,94,92,96,94,95,97,96,95,98,96,97,99,98,97,100,98,99,101,100,99,94,102,93,102,103,93,104,102,94,96,104,94,105,104,96,98,105,96,106,105,98,100,106,98,102,107,103,107,108,103,109,107,102,104,109,102,110,109,104,105,110,104,111,110,105,106,111,105,107,112,108,112,113,108,114,112,107,109,114,107,115,114,109,110,115,109,116,115,110,111,117,110,118,111,106,119,118,106,120,118,119,121,120,119,122,120,121,123,122,121,124,122,123,125,124,123,125,123,126,127,125,126,127,126,128,129,127,128,124,130,122,130,131,122,122,131,120,128,126,132,126,133,132,123,121,133,126,123,133,131,134,120,132,133,135,133,136,135,133,121,136,121,119,136,135,136,101,136,100,101,136,119,100,119,106,100,131,130,137,138,131,137,134,131,138,138,137,139,140,138,139,140,139,141,142,140,141,142,141,143,144,142,143,145,142,144,146,145,144,147,145,146,148,147,146,149,147,148,150,149,148,151,140,142,145,151,142,152,151,145,147,152,145,153,152,147,149,153,147,154,138,140,151,154,140,155,154,151,152,155,151,156,155,152,153,156,152,155,157,154,157,134,154,134,157,118,120,134,118,118,157,111,157,158,111,154,134,138,159,157,155,156,160,155,163,162,161,164,163,161,163,165,162,165,166,162,165,167,166,167,168,166,167,113,168,113,112,168,161,162,169,162,170,169,162,166,170,166,171,170,166,168,171,168,172,171,168,112,172,112,114,172,169,170,173,170,174,173,170,171,174,171,175,174,171,172,175,172,176,175,172,114,176,114,115,176,173,174,177,174,178,177,174,175,178,175,179,178,175,176,179,176,180,179,176,115,180,115,181,180,184,183,182,185,184,182,186,184,185,187,186,185,188,186,187,189,188,187,190,188,189,191,190,189,184,192,183,192,193,183,194,192,184,186,194,184,195,194,186,188,195,186,196,195,188,190,196,188,192,197,193,197,198,193,199,197,192,194,199,192,200,199,194,195,200,194,201,200,195,196,201,195,197,202,198,202,203,198,204,202,197,199,204,197,205,204,199,200,205,199,206,205,200,201,206,200,207,201,196,208,207,196,209,207,208,210,209,208,211,209,210,212,211,210,213,211,212,214,213,212,214,212,215,216,214,215,216,215,217,218,216,217,213,219,211,219,220,211,211,220,209,217,215,221,215,222,221,212,210,222,215,212,222,220,223,209,221,222,224,222,225,224,222,210,225,210,208,225,224,225,191,225,190,191,225,208,190,208,196,190,220,219,226,227,220,226,223,220,227,227,226,228,229,227,228,229,228,230,231,229,230,231,230,232,233,231,232,234,231,233,235,234,233,236,234,235,237,236,235,238,236,237,239,238,237,240,229,231,234,240,231,241,240,234,236,241,234,242,241,236,238,242,236,243,227,229,240,243,229,244,243,240,241,244,240,245,244,241,242,245,241,244,246,243,246,223,243,223,246,207,209,223,207,207,246,201,246,206,201,206,246,244,245,206,244,243,223,227,247,238,239,248,247,239,249,247,248,250,249,248,251,249,250,252,251,250,253,251,252,254,253,252,253,255,251,255,256,251,251,256,249,255,257,256,257,258,256,257,203,258,203,202,258,256,259,249,256,258,259,249,259,247,258,260,259,258,202,260,202,204,260,259,260,261,259,261,247,260,262,261,260,204,262,204,205,262,247,261,238,261,242,238,261,262,242,262,245,242,262,205,245,205,206,245,265,264,263,266,265,263,267,265,266,268,267,266,269,267,268,270,269,268,271,269,270,272,271,270,265,273,264,273,274,264,275,273,265,267,275,265,276,275,267,269,276,267,277,276,269,271,277,269,273,278,274,278,279,274,280,278,273,275,280,273,281,280,275,276,281,275,282,281,276,277,282,276,278,283,279,283,284,279,285,283,278,280,285,278,286,285,280,281,286,280,287,286,281,282,287,281,288,282,277,289,288,277,290,288,289,291,290,289,292,290,291,293,292,291,294,292,293,295,294,293,295,293,296,297,295,296,297,296,298,299,297,298,294,300,292,300,301,292,292,301,290,298,296,302,296,303,302,293,291,303,296,293,303,301,304,290,302,303,305,303,306,305,303,291,306,291,289,306,305,306,272,306,271,272,306,289,271,289,277,271,301,300,307,308,301,307,304,301,308,308,307,309,310,308,309,310,309,311,312,310,311,312,311,313,314,312,313,315,312,314,316,315,314,317,315,316,318,317,316,319,317,318,320,319,318,321,310,312,315,321,312,322,321,315,317,322,315,323,322,317,319,323,317,324,308,310,321,324,310,325,324,321,322,325,321,326,325,322,323,326,322,325,327,324,327,304,324,304,327,288,290,304,288,288,327,282,327,287,282,287,327,325,326,287,325,324,304,308,328,319,320,329,328,320,330,328,329,331,330,329,332,330,331,333,332,331,334,332,333,335,334,333,334,336,332,336,337,332,332,337,330,336,338,337,338,339,337,338,284,339,284,283,339,337,340,330,337,339,340,330,340,328,339,341,340,339,283,341,283,285,341,340,341,342,340,342,328,341,343,342,341,285,343,285,286,343,328,342,319,342,323,319,342,343,323,343,326,323,343,286,326,286,287,326,346,345,344,347,346,344,348,346,347,349,348,347,350,348,349,351,350,349,352,350,351,353,352,351,346,354,345,354,355,345,356,354,346,348,356,346,357,356,348,350,357,348,358,357,350,352,358,350,354,359,355,359,360,355,361,359,354,356,361,354,362,361,356,357,362,356,363,362,357,358,363,357,359,364,360,364,365,360,366,364,359,361,366,359,367,366,361,362,367,361,368,367,362,363,368,362,365,364,369,370,365,369,370,369,371,372,370,371,372,371,373,374,372,373,374,373,375,376,374,375,375,373,377,373,378,377,373,371,378,371,379,378,371,369,379,369,380,379,364,366,380,369,364,380,377,378,381,378,382,381,378,379,382,379,383,382,379,380,383,380,384,383,380,366,384,366,367,384,381,382,385,382,386,385,382,383,386,383,387,386,383,384,387,384,388,387,384,367,388,367,368,388,391,390,389,392,391,389,391,393,390,393,394,390,393,395,394,395,396,394,395,397,396,397,398,396,389,390,399,390,400,399,390,394,400,394,401,400,394,396,401,396,402,401,396,398,402,398,403,402,399,400,404,400,405,404,400,401,405,401,406,405,401,402,406,402,407,406,402,403,407,403,408,407,404,405,409,405,410,409,405,406,410,406,411,410,406,407,411,407,412,411,407,408,412,408,413,412,403,398,414,414,398,415,414,415,416,417,414,416,417,416,418,419,417,418,419,418,420,421,419,420,422,419,421,423,422,421,424,422,423,425,424,423,426,424,425,427,426,425,428,417,419,422,428,419,429,428,422,424,429,422,430,429,424,426,430,424,428,431,417,431,414,417,432,431,428,429,432,428,433,432,429,430,433,429,431,403,414,408,403,431,432,408,431,413,408,432,433,413,432,398,397,415,436,435,434,437,436,434,438,436,437,439,438,437,440,438,439,441,440,439,442,440,441,443,442,441,436,444,435,444,445,435,446,444,436,438,446,436,447,446,438,440,447,438,448,447,440,442,448,440,444,449,445,449,450,445,451,449,444,446,451,444,452,451,446,447,452,446,453,452,447,448,453,447,449,454,450,454,455,450,456,454,449,451,456,449,457,456,451,452,457,451,458,457,452,453,458,452,459,453,448,460,459,448,461,459,460,462,461,460,463,461,462,464,463,462,465,463,464,466,465,464,466,464,467,468,466,467,468,467,469,470,468,469,465,471,463,471,472,463,463,472,461,469,467,473,467,474,473,464,462,474,467,464,474,472,475,461,473,474,476,474,477,476,474,462,477,462,460,477,476,477,443,477,442,443,477,460,442,460,448,442,472,471,478,479,472,478,475,472,479,479,478,480,481,479,480,481,480,482,483,481,482,483,482,484,485,483,484,486,483,485,487,486,485,488,486,487,489,488,487,490,488,489,491,490,489,492,481,483,486,492,483,493,492,486,488,493,486,494,493,488,490,494,488,495,479,481,492,495,481,496,495,492,493,496,492,497,496,493,494,497,493,496,498,495,498,475,495,475,498,459,461,475,459,459,498,453,498,458,453,458,498,496,497,458,496,495,475,479,499,490,491,500,499,491,501,499,500,502,501,500,503,501,502,504,503,502,505,503,504,506,505,504,505,507,503,507,508,503,503,508,501,507,509,508,509,510,508,509,455,510,455,454,510,508,511,501,508,510,511,501,511,499,510,512,511,510,454,512,454,456,512,511,512,513,511,513,499,512,514,513,512,456,514,456,457,514,499,513,490,513,494,490,513,514,494,514,497,494,514,457,497,457,458,497,
 };
 
+GLuint CreateShaderProgram(const char* vShaderStr, const char* pShaderStr)
+{
+    GLint compiled;
+    //Vertex shader
+    vShader = glCreateShader(GL_VERTEX_SHADER);
+    if (vShader == 0)
+    {
+        OutputDebugString(L"glCreateShader Failed!\n");
+        return -1;
+    }
+    glShaderSource(vShader, 1, &vShaderStr, nullptr);
+    glCompileShader(vShader);
+    glGetShaderiv(vShader, GL_COMPILE_STATUS, &compiled);
+    if (!compiled)
+    {
+        GLint infoLength = 0;
+        glGetShaderiv(vShader, GL_INFO_LOG_LENGTH, &infoLength);
+        if (infoLength > 1)
+        {
+            char* infoLog = (char*)malloc(sizeof(char)*infoLength);
+            glGetShaderInfoLog(vShader, infoLength, nullptr, infoLog);
+            OutputDebugString(L"Error compiling vertex shader: \n");
+            OutputDebugStringA(infoLog);
+            OutputDebugStringA("\n");
+            free(infoLog);
+        }
+        glDeleteShader(vShader);
+        return -1;
+    }
+
+    //Fragment shader
+    pShader = glCreateShader(GL_FRAGMENT_SHADER);
+    if (vShader == 0)
+    {
+        OutputDebugString(L"glCreateShader Failed!\n");
+        return -1;
+    }
+    glShaderSource(pShader, 1, &pShaderStr, nullptr);
+    glCompileShader(pShader);
+    glGetShaderiv(pShader, GL_COMPILE_STATUS, &compiled);
+    if (!compiled)
+    {
+        GLint infoLength = 0;
+        glGetShaderiv(pShader, GL_INFO_LOG_LENGTH, &infoLength);
+        if (infoLength > 1)
+        {
+            char* infoLog = (char*)malloc(sizeof(char)*infoLength);
+            glGetShaderInfoLog(pShader, infoLength, NULL, infoLog);
+            OutputDebugString(L"Error compiling fragment shader: \n");
+            OutputDebugStringA(infoLog);
+            OutputDebugStringA("\n");
+            free(infoLog);
+        }
+        glDeleteShader(pShader);
+        return -1;
+    }
+
+    //Program
+    GLint linked;
+    GLuint program = glCreateProgram();
+    if (program == 0)
+    {
+        OutputDebugString(L"glCreateProgram Failed!\n");
+        return -1;
+    }
+    glAttachShader(program, vShader);
+    glAttachShader(program, pShader);
+    glLinkProgram(program);
+    glGetProgramiv(program, GL_LINK_STATUS, &linked);
+    if (!linked)
+    {
+        GLint infoLength = 0;
+        glGetProgramiv(program, GL_INFO_LOG_LENGTH, &infoLength);
+        if (infoLength > 1)
+        {
+            char* infoLog = (char*)malloc(sizeof(char) * infoLength);
+            glGetProgramInfoLog(program, infoLength, nullptr, infoLog);
+            OutputDebugString(L"Error Linking program: \n");
+            OutputDebugStringA(infoLog);
+            OutputDebugStringA("\n");
+            free(infoLog);
+        }
+        glDeleteProgram(program);
+        return -1;
+    }
+    return program;
+}
+
 BOOL InitOpenGL(HWND hWnd)
 {
     GLint compiled;
     {
-        //Vertex shader
         const char* vShaderStr = R"(
 #version 330
 uniform mat4 ProjMtx;
@@ -779,33 +866,6 @@ void main()
 	gl_Position = ProjMtx * vec4(in_Position, 1.0f);
 }
 )";
-        vShader = glCreateShader(GL_VERTEX_SHADER);
-        if (vShader == 0)
-        {
-            OutputDebugString(L"glCreateShader Failed!\n");
-            return -1;
-        }
-        glShaderSource(vShader, 1, &vShaderStr, nullptr);
-        glCompileShader(vShader);
-        glGetShaderiv(vShader, GL_COMPILE_STATUS, &compiled);
-        if (!compiled)
-        {
-            GLint infoLength = 0;
-            glGetShaderiv(vShader, GL_INFO_LOG_LENGTH, &infoLength);
-            if (infoLength > 1)
-            {
-                char* infoLog = (char*)malloc(sizeof(char)*infoLength);
-                glGetShaderInfoLog(vShader, infoLength, nullptr, infoLog);
-                OutputDebugString(L"Error compiling vertex shader: \n");
-                OutputDebugStringA(infoLog);
-                OutputDebugStringA("\n");
-                free(infoLog);
-            }
-            glDeleteShader(vShader);
-            return -1;
-        }
-
-        //Fragment shader
         const char* pShaderStr = R"(
 #version 330
 uniform sampler2D Texture;
@@ -817,65 +877,11 @@ void main()
 	Out_Color = texture(Texture, st);
 }
 )";
-        pShader = glCreateShader(GL_FRAGMENT_SHADER);
-        if (vShader == 0)
-        {
-            OutputDebugString(L"glCreateShader Failed!\n");
-            return FALSE;
-        }
-        glShaderSource(pShader, 1, &pShaderStr, nullptr);
-        glCompileShader(pShader);
-        glGetShaderiv(pShader, GL_COMPILE_STATUS, &compiled);
-        if (!compiled)
-        {
-            GLint infoLength = 0;
-            glGetShaderiv(pShader, GL_INFO_LOG_LENGTH, &infoLength);
-            if (infoLength > 1)
-            {
-                char* infoLog = (char*)malloc(sizeof(char)*infoLength);
-                glGetShaderInfoLog(pShader, infoLength, NULL, infoLog);
-                OutputDebugString(L"Error compiling fragment shader: \n");
-                OutputDebugStringA(infoLog);
-                OutputDebugStringA("\n");
-                free(infoLog);
-            }
-            glDeleteShader(pShader);
-            return FALSE;
-        }
-
-        //Program
-        GLint linked;
-        GLuint program = glCreateProgram();
-        if (program == 0)
-        {
-            OutputDebugString(L"glCreateProgram Failed!\n");
-            return -1;
-        }
-        glAttachShader(program, vShader);
-        glAttachShader(program, pShader);
-        glLinkProgram(program);
-        glGetProgramiv(program, GL_LINK_STATUS, &linked);
-        if (!linked)
-        {
-            GLint infoLength = 0;
-            glGetProgramiv(program, GL_INFO_LOG_LENGTH, &infoLength);
-            if (infoLength > 1)
-            {
-                char* infoLog = (char*)malloc(sizeof(char) * infoLength);
-                glGetProgramInfoLog(program, infoLength, nullptr, infoLog);
-                OutputDebugString(L"Error Linking program: \n");
-                OutputDebugStringA(infoLog);
-                OutputDebugStringA("\n");
-                free(infoLog);
-            }
-            glDeleteProgram(program);
-            return FALSE;
-        }
-        programs[0] = program;
+        programs[0] = CreateShaderProgram(vShaderStr, pShaderStr);
     }
+    _CheckGLError_
 
     {
-        //Vertex shader
         const char* vShaderStr = R"(
 #version 330
 uniform mat4 ProjMtx;
@@ -887,33 +893,6 @@ void main()
 	gl_Position = ProjMtx * vec4(in_Position.xyz + in_Normal * 0.06f, 1.0f);
 }
 )";
-        vShader = glCreateShader(GL_VERTEX_SHADER);
-        if (vShader == 0)
-        {
-            OutputDebugString(L"glCreateShader Failed!\n");
-            return -1;
-        }
-        glShaderSource(vShader, 1, &vShaderStr, nullptr);
-        glCompileShader(vShader);
-        glGetShaderiv(vShader, GL_COMPILE_STATUS, &compiled);
-        if (!compiled)
-        {
-            GLint infoLength = 0;
-            glGetShaderiv(vShader, GL_INFO_LOG_LENGTH, &infoLength);
-            if (infoLength > 1)
-            {
-                char* infoLog = (char*)malloc(sizeof(char)*infoLength);
-                glGetShaderInfoLog(vShader, infoLength, nullptr, infoLog);
-                OutputDebugString(L"Error compiling vertex shader: \n");
-                OutputDebugStringA(infoLog);
-                OutputDebugStringA("\n");
-                free(infoLog);
-            }
-            glDeleteShader(vShader);
-            return -1;
-        }
-
-        //Fragment shader
         const char* pShaderStr = R"(
 #version 330
 out vec4 Out_Color;
@@ -922,64 +901,9 @@ void main()
 	Out_Color = vec4(1.0f, 0, 0, 1.0f);
 }
 )";
-        pShader = glCreateShader(GL_FRAGMENT_SHADER);
-        if (vShader == 0)
-        {
-            OutputDebugString(L"glCreateShader Failed!\n");
-            return FALSE;
-        }
-        glShaderSource(pShader, 1, &pShaderStr, nullptr);
-        glCompileShader(pShader);
-        glGetShaderiv(pShader, GL_COMPILE_STATUS, &compiled);
-        if (!compiled)
-        {
-            GLint infoLength = 0;
-            glGetShaderiv(pShader, GL_INFO_LOG_LENGTH, &infoLength);
-            if (infoLength > 1)
-            {
-                char* infoLog = (char*)malloc(sizeof(char)*infoLength);
-                glGetShaderInfoLog(pShader, infoLength, NULL, infoLog);
-                OutputDebugString(L"Error compiling fragment shader: \n");
-                OutputDebugStringA(infoLog);
-                OutputDebugStringA("\n");
-                free(infoLog);
-            }
-            glDeleteShader(pShader);
-            return FALSE;
-        }
-
-        //Program
-        GLint linked;
-        GLuint program = glCreateProgram();
-        if (program == 0)
-        {
-            OutputDebugString(L"glCreateProgram Failed!\n");
-            return -1;
-        }
-        glAttachShader(program, vShader);
-        glAttachShader(program, pShader);
-        glLinkProgram(program);
-        glGetProgramiv(program, GL_LINK_STATUS, &linked);
-        if (!linked)
-        {
-            GLint infoLength = 0;
-            glGetProgramiv(program, GL_INFO_LOG_LENGTH, &infoLength);
-            if (infoLength > 1)
-            {
-                char* infoLog = (char*)malloc(sizeof(char) * infoLength);
-                glGetProgramInfoLog(program, infoLength, nullptr, infoLog);
-                OutputDebugString(L"Error Linking program: \n");
-                OutputDebugStringA(infoLog);
-                OutputDebugStringA("\n");
-                free(infoLog);
-            }
-            glDeleteProgram(program);
-            return FALSE;
-        }
-        programs[1] = program;
+        programs[1] = CreateShaderProgram(vShaderStr, pShaderStr);;
     }
-
-    glUseProgram(programs[0]);
+    _CheckGLError_
 
     //set attribute locations
     attributePos = 0;
