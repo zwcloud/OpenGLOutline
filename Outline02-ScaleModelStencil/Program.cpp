@@ -26,7 +26,8 @@ GLuint indexBuf = 0;
 GLuint texture = 0;
 GLuint vShader = 0;
 GLuint pShader = 0;
-GLuint programs[] = { 0,0 };
+GLuint normalProgram = 0;
+GLuint flatColorProgram = 0;
 GLint attributePos = 0;
 GLint attributeTexCoord = 0;
 GLint uniformProjMtx = 0;
@@ -348,7 +349,7 @@ void main()
 	Out_Color = texture(Texture, st);
 }
 )";
-        programs[0] = CreateShaderProgram(vShaderStr, pShaderStr);
+        normalProgram = CreateShaderProgram(vShaderStr, pShaderStr);
     }
     _CheckGLError_
 
@@ -370,14 +371,14 @@ void main()
 	Out_Color = vec4(1.0f, 0, 0, 1.0f);
 }
 )";
-        programs[1] = CreateShaderProgram(vShaderStr, pShaderStr);
+        flatColorProgram = CreateShaderProgram(vShaderStr, pShaderStr);
     }
     _CheckGLError_
 
     //get attribute and uniform location by name
-    attributePos = glGetAttribLocation(programs[0], "in_Position");//get location of attribute <in_Position>
-    attributeTexCoord = glGetAttribLocation(programs[0], "in_TexCoord");//get location of attribute <in_TexCoord>
-    uniformProjMtx = glGetUniformLocation(programs[0], "ProjMtx");
+    attributePos = glGetAttribLocation(normalProgram, "in_Position");//get location of attribute <in_Position>
+    attributeTexCoord = glGetAttribLocation(normalProgram, "in_TexCoord");//get location of attribute <in_TexCoord>
+    uniformProjMtx = glGetUniformLocation(normalProgram, "ProjMtx");
 
     _CheckGLError_
 
@@ -497,8 +498,8 @@ void DestroyOpenGL(HWND hWnd)
     //OpenGL Destroy
     glDeleteShader(vShader);
     glDeleteShader(pShader);
-    glDeleteProgram(programs[0]);
-    glDeleteProgram(programs[1]);
+    glDeleteProgram(normalProgram);
+    glDeleteProgram(flatColorProgram);
 
     //OpenGL Context Destroy
     wglMakeCurrent(NULL, NULL);
@@ -549,7 +550,7 @@ void Render(HWND hWnd)
     glStencilFunc(GL_ALWAYS, 1, 0xFF); // all fragments should update the stencil buffer
     glStencilMask(0xFF); // enable writing to the stencil buffer
     //draw the object with normal shader
-    glUseProgram(programs[0]);
+    glUseProgram(normalProgram);
     setUniformMVP(uniformProjMtx, (float)clientWidth / clientHeight, t, glm::vec3(-1.0f, 0.0f, -1.0f), glm::vec3(1, 1, 1));//not scaled
     glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, 0);
     setUniformMVP(uniformProjMtx, (float)clientWidth / clientHeight, t, glm::vec3(1.0f, 0.0f, 0.0f), glm::vec3(1, 1, 1));
@@ -560,7 +561,7 @@ void Render(HWND hWnd)
     glStencilMask(0x00); // disable writing to the stencil buffer
     glDisable(GL_DEPTH_TEST);//drawing outline, should b
     //draw the object with single color shader
-    glUseProgram(programs[1]);
+    glUseProgram(flatColorProgram);
     setUniformMVP(uniformProjMtx, (float)clientWidth / clientHeight, t, glm::vec3(-1.0f, 0.0f, -1.0f), glm::vec3(1.06, 1.06, 1.06));//scaled up
     glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, 0);
     setUniformMVP(uniformProjMtx, (float)clientWidth / clientHeight, t, glm::vec3(1.0f, 0.0f, 0.0f), glm::vec3(1.06, 1.06, 1.06));//scaled up
